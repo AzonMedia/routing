@@ -1,8 +1,8 @@
 <?php
 
-namespace Guzaba2\Mvc\Mvc\Interfaces;
+namespace Azonmedia\Routing\Interfaces;
 
 interface RoutingMapInterface
 {
-    public function match(string $uri, ?string &$rewritten_uri = NULL) : ?callable;
+    public function match(string $uri) : ?callable;
 }
