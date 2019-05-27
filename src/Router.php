@@ -20,6 +20,13 @@ class Router
         $this->add_routing_map($RoutingMap);
     }
 
+    /**
+     * Adds a new routing map.
+     * The maps are matched in the order they were added.
+     * Returns FALSE if the provided $routingMap is already added.
+     * @param RoutingMapInterface $RoutingMap
+     * @return bool
+     */
     public function add_routing_map(RoutingMapInterface $RoutingMap) : bool
     {
         $ret = FALSE;
@@ -33,6 +40,7 @@ class Router
     }
 
     /**
+     * {@inheritDoc}
      * @param string $uri
      * @return callable|null
      */
@@ -48,6 +56,11 @@ class Router
         return $ret;
     }
 
+    /**
+     * {@inheritDoc}
+     * @param RequestInterface $Request
+     * @return callable|null
+     */
     public function match_request(RequestInterface $Request) : ?callable
     {
         $ret = NULL;

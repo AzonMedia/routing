@@ -4,6 +4,7 @@ namespace Azonmedia\Routing;
 
 
 use Azonmedia\Routing\Exceptions\RoutingConfigurationException;
+use Psr\Http\Message\RequestInterface;
 
 /**
  * Class RoutingMapArray
@@ -25,7 +26,14 @@ class RoutingMapArray
         $this->routing_map = $routing_map;
     }
 
-    public function match(string $uri) : ?callable
+    /**
+     * {@inheritDoc}
+     * @param string $uri
+     * @return callable|null
+     * @throws RoutingConfigurationException
+     * @throws \ReflectionException
+     */
+    public function match_uri(string $uri) : ?callable
     {
         $ret = NULL;
         if ( ($route = array_search($uri, $this->routing_map) ) !== FALSE) {
@@ -64,5 +72,16 @@ class RoutingMapArray
             }
         }
         return $ret;
+    }
+
+    /**
+     * {@inheritDoc}
+     * @param RequestInterface $Request
+     * @return callable|null
+     * @throws RoutingConfigurationException
+     */
+    public function match_request(RequestInterface $Request) : ?callable
+    {
+        return $this->match_uri($Request->getUri());
     }
 }
