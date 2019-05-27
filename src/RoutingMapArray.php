@@ -1,9 +1,10 @@
 <?php
+declare(strict_types=1);
 
 namespace Azonmedia\Routing;
 
-
 use Azonmedia\Routing\Exceptions\RoutingConfigurationException;
+use Azonmedia\Routing\Interfaces\RoutingMapInterface;
 use Psr\Http\Message\RequestInterface;
 
 /**
@@ -14,6 +15,7 @@ use Psr\Http\Message\RequestInterface;
  * @package Guzaba2\Mvc
  */
 class RoutingMapArray
+implements RoutingMapInterface
 {
 
     /**
@@ -79,9 +81,18 @@ class RoutingMapArray
      * @param RequestInterface $Request
      * @return callable|null
      * @throws RoutingConfigurationException
+<<<<<<< Updated upstream
      */
     public function match_request(RequestInterface $Request) : ?callable
     {
         return $this->match_uri($Request->getUri());
+=======
+     * @throws \ReflectionException
+     */
+    public function match_request(RequestInterface $Request) : ?callable
+    {
+        $ret = $this->match_uri($Request->getUri());
+        return $ret;
+>>>>>>> Stashed changes
     }
 }

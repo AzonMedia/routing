@@ -1,13 +1,14 @@
 <?php
-
+declare(strict_types=1);
 
 namespace Azonmedia\Routing;
 
-
+use Azonmedia\Routing\Interfaces\RouterInterface;
 use Azonmedia\Routing\Interfaces\RoutingMapInterface;
 use Psr\Http\Message\RequestInterface;
 
 class Router
+implements RouterInterface
 {
 
     /**
@@ -15,6 +16,11 @@ class Router
      */
     protected $routing_maps = [];
 
+    /**
+     * Router constructor.
+     * Expects to have a RoutingMap provided - this is the promary routing map.
+     * @param RoutingMapInterface $RoutingMap
+     */
     public function __construct(RoutingMapInterface $RoutingMap)
     {
         $this->add_routing_map($RoutingMap);
@@ -65,7 +71,7 @@ class Router
     {
         $ret = NULL;
         foreach ($this->routing_maps as $RoutingMap) {
-            $ret = $RoutingMap->match_request($uri);
+            $ret = $RoutingMap->match_request($Request);
             if ($ret) {
                 break;
             }
