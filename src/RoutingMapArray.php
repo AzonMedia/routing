@@ -81,18 +81,11 @@ implements RoutingMapInterface
      * @param RequestInterface $Request
      * @return callable|null
      * @throws RoutingConfigurationException
-<<<<<<< Updated upstream
-     */
-    public function match_request(RequestInterface $Request) : ?callable
-    {
-        return $this->match_uri($Request->getUri());
-=======
      * @throws \ReflectionException
      */
     public function match_request(RequestInterface $Request) : ?callable
     {
         $ret = $this->match_uri($Request->getUri());
         return $ret;
->>>>>>> Stashed changes
     }
 }
