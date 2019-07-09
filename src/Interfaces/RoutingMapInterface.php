@@ -20,5 +20,5 @@ interface RoutingMapInterface
      * @param RequestInterface $Request
      * @return RequestInterface
      */
-    public function match_request(RequestInterface $Request) : ?callable;
+    public function match_request(RequestInterface $Request) : RequestInterface;
 }

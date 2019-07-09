@@ -67,7 +67,7 @@ implements RouterInterface
      * @param RequestInterface $Request
      * @return callable|null
      */
-    public function match_request(RequestInterface $Request) : ?callable
+    public function match_request(RequestInterface $Request) : ?RequestInterface
     {
         $ret = NULL;
         foreach ($this->routing_maps as $RoutingMap) {

@@ -28,9 +28,25 @@ implements RoutingMapInterface
      */
     protected $routing_map = [];
 
+    /**
+     * @var array
+     */
+    protected $routing_map_regex = [];
+
+    protected $RouteParser;
+
     public function __construct(array $routing_map)
     {
         $this->routing_map = $routing_map;
+        $this->RouteParser = new RouteParser();
+
+        foreach ($routing_map as $path => $value) {
+            $new_route = $this->RouteParser->parse($path);
+            if ($new_route) {
+                $this->routing_map_regex[$new_route['path']] = $value + $new_route;
+            }
+        }
+
     }
 
     /**
@@ -83,8 +99,13 @@ implements RoutingMapInterface
                 }
             }
 
+        } else {
+            
         }
-        return $ret;
+
+        $Request = $Request->withAttribute('controller_callable', $ret);
+
+        return $Request;
     }
 
     /**
@@ -94,18 +115,18 @@ implements RoutingMapInterface
      * @throws RoutingConfigurationException
      * @throws \ReflectionException
      */
-    public function match_request(RequestInterface $Request) : ?callable
+    public function match_request(RequestInterface $Request) : RequestInterface
     {
         //$ret = $this->match_uri( (string) $Request->getUri() );
         //we must take into account the method as well
         $method_const = $Request->getMethodConstant();
 
         $path = $Request->getUri()->getPath();
-
         $ret = NULL;
+
         //if ( ($route = array_search( $path , $this->routing_map) ) !== FALSE) {
-        if (isset($this->routing_map[$path])) {
-            $route = $path;
+            if (isset($this->routing_map[$path])) {
+                $route = $path;
             if (isset($this->routing_map[$route][$method_const])) {
                 $controller = $this->routing_map[$route][$method_const];//if only URI matching is done then we use the GET method
                 if (is_array($controller)) {
@@ -144,9 +165,29 @@ implements RoutingMapInterface
                 //alternatively here we can route to a controller displaying a message that the route is defined but the method is not
                 //or leave NULL and leave to the next router to find a match
             }
+        } else {
+            foreach ($this->routing_map_regex as $path_regex => $arr) {
+                if (preg_match("~{$path_regex}~", $path, $matches) === 1 && $arr['matches'] === count($matches) - 1) {
+                    if (isset($arr[$method_const])) {
+                        $controller = $arr[$method_const];
+                        
+                        $class_name = $controller[0];
+                        $method_name = $controller[1];
+
+                        array_shift($matches);
+                        $arguments = array_combine($arr['arguments'], $matches);
+
+                        $Request = $Request->withAttribute('controller_arguments', $arguments);
+
+                        $ret = [new $class_name($Request), $method_name];
+                        break;
+                    }
+                }
+            }
         }
 
-        return $ret;
-        //return function(){};
+        $Request = $Request->withAttribute('controller_callable', $ret);
+
+        return $Request;
     }
 }
