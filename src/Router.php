@@ -36,12 +36,22 @@ implements RouterInterface
     public function add_routing_map(RoutingMapInterface $RoutingMap) : bool
     {
         $ret = FALSE;
+        if (!$this->has_routing_map($RoutingMap)) {
+            $this->routing_maps[] = $RoutingMap;
+            $ret = TRUE;
+        }
+        return $ret;
+    }
+
+    public function has_routing_map(RoutingMapInterface $RoutingMap) : bool
+    {
+        $ret = FALSE;
         foreach ($this->routing_maps as $RegisteredRoutingMap) {
             if (get_class($RegisteredRoutingMap) === get_class($RoutingMap)) {
-                return $ret;
+                $ret = TRUE;
+                break;
             }
         }
-        $this->routing_maps[] = $RoutingMap;
         return $ret;
     }
 
