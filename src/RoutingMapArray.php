@@ -46,6 +46,8 @@ implements RoutingMapInterface
                 $this->routing_map_regex[$new_route['path']] = $value + $new_route;
             }
         }
+        //print_r($this->routing_map);
+        //print_r($this->routing_map_regex);
 
     }
 
@@ -125,65 +127,76 @@ implements RoutingMapInterface
         $ret = NULL;
 
         //if ( ($route = array_search( $path , $this->routing_map) ) !== FALSE) {
-            if (isset($this->routing_map[$path])) {
-                $route = $path;
-            if (isset($this->routing_map[$route][$method_const])) {
-                $controller = $this->routing_map[$route][$method_const];//if only URI matching is done then we use the GET method
-                if (is_array($controller)) {
-                    //this needs to be converted to a callable if the provided method is not static
-                    //if it is static then this is a valid callable
-                    if (count($controller) != 2) {
-                        throw new RoutingConfigurationException(sprintf('An invalid number of elements %s is provided as controller for route %s. If the controller is set as an array the number of elements should be 2.'), count($controller), $route);
-                    }
-                    $class_name = $controller[0];
-                    $method_name = $controller[1];
-                    if (!class_exists($class_name)) {
-                        throw new RoutingConfigurationException(sprintf('The class configured as controller for route %s does not exist.', $route));
-                    }
-                    $RClass = new \ReflectionClass($class_name);
-                    if (!$RClass->hasMethod($method_name)) {
-                        throw new RoutingConfigurationException(sprintf('The method configured as controller for route %s does not exist.', $route));
-                    }
-                    $RMethod = $RClass->getMethod($method_name);
-                    if ($RMethod->isStatic()) {
-                        $ret = $controller;
-                    } else {
-                        //the method is dynamic and an instance needs to be created
-                        $ret = [new $class_name($Request), $method_name];
-                    }
-                } elseif (is_string($controller)) {
-                    if (!function_exists($controller)) {
-                        throw new RoutingConfigurationException(sprintf('The controller for route %s is set as function which is not defined.', $route));
-                    }
-                    $ret = $controller;
-                } elseif (is_callable($controller)) {
-                    //it is already a callable (closure or an invokable class)
-                    //this is possible if the routes are defined in PHP
-                    $ret = $controller;
+        if (isset($this->routing_map[$path])) {
+            $route = $path;
+            foreach ($this->routing_map[$path] as $method=>$controller) {
+                if ($method_const & $method) { //bitwise
+                    $controller_to_execute = $controller;
+                    break 1;
                 }
-            } else {
-                //alternatively here we can route to a controller displaying a message that the route is defined but the method is not
-                //or leave NULL and leave to the next router to find a match
             }
+
+
         } else {
             foreach ($this->routing_map_regex as $path_regex => $arr) {
                 if (preg_match("~{$path_regex}~", $path, $matches) === 1 && $arr['matches'] === count($matches) - 1) {
-                    if (isset($arr[$method_const])) {
-                        $controller = $arr[$method_const];
-                        
-                        $class_name = $controller[0];
-                        $method_name = $controller[1];
+                    foreach ($arr as $method => $controller) {
+                        if ($method_const & $method) { //bitwise
 
-                        array_shift($matches);
-                        $arguments = array_combine($arr['arguments'], $matches);
+                            $class_name = $controller[0];
+                            $method_name = $controller[1];
 
-                        $Request = $Request->withAttribute('controller_arguments', $arguments);
+                            array_shift($matches);
+                            $arguments = array_combine($arr['arguments'], $matches);
 
-                        $ret = [new $class_name($Request), $method_name];
-                        break;
+                            //$Request = $Request->withAttribute('controller_arguments', $arguments);
+
+                            //$ret = [new $class_name($Request), $method_name];
+                            $controller_to_execute = $controller;
+                            break 2;
+                        }
                     }
                 }
             }
+        }
+        if (!empty($controller_to_execute)) {
+
+            if (is_array($controller_to_execute)) {
+                //this needs to be converted to a callable if the provided method is not static
+                //if it is static then this is a valid callable
+                if (count($controller_to_execute) != 2) {
+                    throw new RoutingConfigurationException(sprintf('An invalid number of elements %s is provided as controller for route %s. If the controller is set as an array the number of elements should be 2.'), count($controller), $route);
+                }
+                $class_name = $controller_to_execute[0];
+                $method_name = $controller_to_execute[1];
+                if (!class_exists($class_name)) {
+                    throw new RoutingConfigurationException(sprintf('The class configured as controller for route %s does not exist.', $route));
+                }
+                $RClass = new \ReflectionClass($class_name);
+                if (!$RClass->hasMethod($method_name)) {
+                    throw new RoutingConfigurationException(sprintf('The method configured as controller for route %s does not exist.', $route));
+                }
+                $RMethod = $RClass->getMethod($method_name);
+                if ($RMethod->isStatic()) {
+                    $ret = $controller_to_execute;
+                } else {
+                    //the method is dynamic and an instance needs to be created
+                    if (!empty($arguments)) {
+                        $Request = $Request->withAttribute('controller_arguments', $arguments);
+                    }
+                    $ret = [new $class_name($Request), $method_name];
+                }
+            } elseif (is_string($controller_to_execute)) {
+                if (!function_exists($controller_to_execute)) {
+                    throw new RoutingConfigurationException(sprintf('The controller for route %s is set as function which is not defined.', $route));
+                }
+                $ret = $controller_to_execute;
+            } elseif (is_callable($controller_to_execute)) {
+                //it is already a callable (closure or an invokable class)
+                //this is possible if the routes are defined in PHP
+                $ret = $controller_to_execute;
+            }
+
         }
 
         $Request = $Request->withAttribute('controller_callable', $ret);
