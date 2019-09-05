@@ -46,8 +46,6 @@ implements RoutingMapInterface
                 $this->routing_map_regex[$new_route['path']] = $value + $new_route;
             }
         }
-        //print_r($this->routing_map);
-        //print_r($this->routing_map_regex);
 
     }
 
