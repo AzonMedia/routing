@@ -168,11 +168,11 @@ implements RoutingMapInterface
                 $class_name = $controller_to_execute[0];
                 $method_name = $controller_to_execute[1];
                 if (!class_exists($class_name)) {
-                    throw new RoutingConfigurationException(sprintf('The class configured as controller for route %s does not exist.', $route));
+                    throw new RoutingConfigurationException(sprintf('The class %s configured as controller for route %s does not exist.', $class_name, $route));
                 }
                 $RClass = new \ReflectionClass($class_name);
                 if (!$RClass->hasMethod($method_name)) {
-                    throw new RoutingConfigurationException(sprintf('The method configured as controller for route %s does not exist.', $route));
+                    throw new RoutingConfigurationException(sprintf('The method %s::%s() configured as controller for route %s does not exist.', $class_name, $method_name, $route));
                 }
                 $RMethod = $RClass->getMethod($method_name);
                 if ($RMethod->isStatic()) {
@@ -186,7 +186,7 @@ implements RoutingMapInterface
                 }
             } elseif (is_string($controller_to_execute)) {
                 if (!function_exists($controller_to_execute)) {
-                    throw new RoutingConfigurationException(sprintf('The controller for route %s is set as function which is not defined.', $route));
+                    throw new RoutingConfigurationException(sprintf('The controller %s for route %s is set as function which is not defined.', $controller_to_execute, $route));
                 }
                 $ret = $controller_to_execute;
             } elseif (is_callable($controller_to_execute)) {
