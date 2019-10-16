@@ -25,4 +25,13 @@ interface RouterInterface
      * @return callable|null
      */
     public function match_request(RequestInterface $Request) : ?RequestInterface;
+
+    /**
+     * Merges the provided $routing_map_2 to $routing_map_1
+     * The mathing routes or methods are preserved from $routing_map_1.
+     * @param array $routing_map_1
+     * @param array $routing_map_2
+     * @return array The merged routing map
+     */
+    public static function merge_routes(array $routing_map_1, array $routing_map_2) : array;
 }

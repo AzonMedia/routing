@@ -88,4 +88,34 @@ implements RouterInterface
         }
         return $ret;
     }
+
+    /**
+     * {@inheritDoc}
+     * @param array $routing_map_1
+     * @param array $routing_map_2
+     * @return array
+     */
+    public static function merge_routes(array $routing_map_1, array $routing_map_2) : array
+    {
+        $ret = $routing_map_1;
+        foreach ($routing_map_2 as $route => $methods) {
+            if (!isset($ret[$route])) {
+                $ret[$route] = $methods;
+            } else {
+                foreach ($methods as $method => $controller) {
+                    //the methods are bitmasks and can combine multiple methods handled by the same controller
+                    $method_found = FALSE;
+                    foreach ($ret[$route] as $ret_method => $ret_controller) {
+                        if ($ret_method & $method) {
+                            $method_found = TRUE;
+                        }
+                    }
+                    if (!$method_found) {
+                        $ret[$route][$method] = $controller;
+                    }
+                }
+            }
+        }
+        return $ret;
+    }
 }
