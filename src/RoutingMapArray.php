@@ -26,7 +26,7 @@ implements RoutingMapInterface
     /**
      * @var array
      */
-    protected $routing_map = [];
+    protected iterable $routing_map = [];
 
     /**
      * @var array
@@ -35,7 +35,7 @@ implements RoutingMapInterface
 
     protected $RouteParser;
 
-    public function __construct(array $routing_map)
+    public function __construct(iterable $routing_map)
     {
         $this->routing_map = $routing_map;
         $this->RouteParser = new RouteParser();
@@ -47,6 +47,11 @@ implements RoutingMapInterface
             }
         }
 
+    }
+
+    public function get_routing_map() : iterable
+    {
+        return $this->routing_map;
     }
 
     /**

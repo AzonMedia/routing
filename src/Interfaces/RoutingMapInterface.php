@@ -8,6 +8,8 @@ use Psr\Http\Message\RequestInterface;
 interface RoutingMapInterface
 {
 
+    public function get_routing_map() : iterable ;
+
     /**
      * Returns a callable if a route is found to correspond to the provided URI, otherwise returns NULL.
      * @param string $uri
