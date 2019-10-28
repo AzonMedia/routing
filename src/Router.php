@@ -57,23 +57,6 @@ implements RouterInterface
 
     /**
      * {@inheritDoc}
-     * @param string $uri
-     * @return callable|null
-     */
-    public function match_uri(string $uri) : ?callable
-    {
-        $ret = NULL;
-        foreach ($this->routing_maps as $RoutingMap) {
-            $ret = $RoutingMap->match_uri($uri);
-            if ($ret) {
-                break;
-            }
-        }
-        return $ret;
-    }
-
-    /**
-     * {@inheritDoc}
      * @param RequestInterface $Request
      * @return callable|null
      */
@@ -82,6 +65,18 @@ implements RouterInterface
         $ret = NULL;
         foreach ($this->routing_maps as $RoutingMap) {
             $ret = $RoutingMap->match_request($Request);
+            if ($ret) {
+                break;
+            }
+        }
+        return $ret;
+    }
+
+    public function get_meta_data(RequestInterface $Request) : ?array
+    {
+        $ret = NULL;
+        foreach ($this->routing_maps as $RoutingMap) {
+            $ret = $RoutingMap->get_meta_data($Request);
             if ($ret) {
                 break;
             }

@@ -9,15 +9,6 @@ interface RouterInterface
 {
 
     /**
-     * Walks through all added routing maps (in the order they were added) and tried to find a match for the provided uri.
-     * Stops and returns at the first one that does return a callable.
-     * Returns a callable (or NULL if not found) based on the provided URI
-     * @param string $uri
-     * @return callable|null
-     */
-    public function match_uri(string $uri) : ?callable;
-
-    /**
      * Walks through all added routing maps (in the order they were added) and tried to find a match for the provided Request.
      * Stops and returns at the first one that does return a callable.
      * Returns a callable (or NULL if not found) based on the provided Request
@@ -34,4 +25,7 @@ interface RouterInterface
      * @return array The merged routing map
      */
     public static function merge_routes(array $routing_map_1, array $routing_map_2) : array;
+
+
+    public function get_meta_data(RequestInterface $Request) : ?array ;
 }
