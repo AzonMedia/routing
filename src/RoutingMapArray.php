@@ -116,6 +116,51 @@ implements RoutingMapInterface
             foreach ($this->routing_map_regex as $path_regex => $arr) {
                 if (preg_match("~{$path_regex}~", $path, $matches) === 1 && $arr['matches'] === count($matches) - 1) {
                     foreach ($arr as $method => $controller) {
+                        if (! \is_int($method)) {
+                            /**
+                             * We have different structure in routing_map_regex and need to skip non-numeric keys
+                             * 
+                             * ["/api/role/(.*)"]=>
+                                    array(7) {
+                                    [28]=>
+                                    array(2) {
+                                        [0]=>
+                                        string(41) "Guzaba2\Orm\ActiveRecordDefaultController"
+                                        [1]=>
+                                        string(4) "read"
+                                    }
+                                    [160]=>
+                                    array(2) {
+                                        [0]=>
+                                        string(41) "Guzaba2\Orm\ActiveRecordDefaultController"
+                                        [1]=>
+                                        string(6) "update"
+                                    }
+                                    [2]=>
+                                    array(2) {
+                                        [0]=>
+                                        string(41) "Guzaba2\Orm\ActiveRecordDefaultController"
+                                        [1]=>
+                                        string(6) "delete"
+                                    }
+                                    ["path"]=>
+                                    string(14) "/api/role/(.*)"
+                                    ["original_path"]=>
+                                    string(16) "/api/role/{uuid}"
+                                    ["matches"]=>
+                                    int(1)
+                                    ["arguments"]=>
+                                    array(1) {
+                                        [0]=>
+                                        string(4) "uuid"
+                                    }
+                                    }
+
+                             * 
+                             */
+                            continue;
+                        }
+
                         if ($method_const & $method) { //bitwise
 
                             $class_name = $controller[0];
