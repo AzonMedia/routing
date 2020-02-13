@@ -54,6 +54,18 @@ implements RoutingMapInterface
 
     }
 
+    public function add_route(string $route, int $method, callable $controller) : void
+    {
+        if (isset($this->routing_map[$route])) {
+            foreach ($this->routing_map[$route] as $existing_method => $existing_controller) {
+                if ($existing_method & $method) {
+                    throw new \RuntimeException(sprintf('The method %s already exists (%s) for route %s.', $method, $existing_method, $route));
+                }
+            }
+        }
+        $this->routing_map[$route][$method] = $controller;
+    }
+
     public function get_routing_map() : iterable
     {
         return $this->routing_map;
