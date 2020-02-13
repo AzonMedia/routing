@@ -126,7 +126,7 @@ implements RoutingMapInterface
 
         } else {
             foreach ($this->routing_map_regex as $path_regex => $arr) {
-                if (preg_match("~{$path_regex}~", $path, $matches) === 1 && $arr['matches'] === count($matches) - 1) {
+                if (preg_match("~^{$path_regex}$~", $path, $matches) === 1 && $arr['matches'] === count($matches) - 1) {
                     foreach ($arr as $method => $controller) {
                         if (! \is_int($method)) {
                             /**
