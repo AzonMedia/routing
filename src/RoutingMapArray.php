@@ -95,6 +95,10 @@ implements RoutingMapInterface
     }
 
     /**
+     * Matches /some/path to routes /some/path/ & /some/path
+     * Matches /some/path/ to routes /some/path/ & /some/path
+     * The presence or lack of a trailing / in either the route or the provided path does not matter.
+     * It also supports matching with variables like /some/path/{value}.
      * {@inheritDoc}
      * @param RequestInterface $Request
      * @return callable|null
@@ -113,17 +117,31 @@ implements RoutingMapInterface
         $path = $Request->getUri()->getPath();
         $ret = NULL;
 
-        //if ( ($route = array_search( $path , $this->routing_map) ) !== FALSE) {
+
+        $path_wo_trailing_slash = $path;
+        if ($path[strlen($path) -1] === '/') {
+            $path_wo_trailing_slash = substr($path_wo_trailing_slash, 0, strlen($path) -1);
+        }
+        $path_with_trailing_slash = $path;
+        if ($path[strlen($path) -1] !== '/') {
+            $path_with_trailing_slash .= '/';
+        }
+
         if (isset($this->routing_map[$path])) {
-            $route = $path;
-            foreach ($this->routing_map[$path] as $method=>$controller) {
+            //leave path unmodified
+        } elseif (isset($this->routing_map[$path_wo_trailing_slash])) {
+            $path = $path_wo_trailing_slash;
+        } elseif (isset($this->routing_map[$path_with_trailing_slash])) {
+            $path = $path_with_trailing_slash;
+        }
+
+        if (isset($this->routing_map[$path])) {
+            foreach ($this->routing_map[$path] as $method => $controller) {
                 if ($method_const & $method) { //bitwise
                     $controller_to_execute = $controller;
                     break 1;
                 }
             }
-
-
         } else {
             foreach ($this->routing_map_regex as $path_regex => $arr) {
                 if (preg_match("~^{$path_regex}$~", $path, $matches) === 1 && $arr['matches'] === count($matches) - 1) {
