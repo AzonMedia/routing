@@ -54,6 +54,32 @@ implements RoutingMapInterface
 
     }
 
+    /**
+     * Returns all routes serving $method and optionally filtered by $regex
+     * @param string $method
+     * @param string $regex
+     * @return array
+     */
+    public function get_routes(int $method, string $regex = '') : array
+    {
+        $ret = [];
+        foreach ($this->routing_map as $route => $methods) {
+            foreach ($methods as $route_method => $controller) {
+                if ($method & $route_method) {
+                    if ($regex) {
+                        if (preg_match($regex, $route)) {
+                            $ret[] = $route;
+                        }
+                    } else {
+                        $ret[] = $route;
+                    }
+                }
+            }
+
+        }
+        return $ret;
+    }
+
     public function add_route(string $route, int $method, callable $controller) : void
     {
         if (isset($this->routing_map[$route])) {

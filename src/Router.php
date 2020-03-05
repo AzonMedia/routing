@@ -26,6 +26,21 @@ implements RouterInterface
         $this->add_routing_map($RoutingMap);
     }
 
+
+    /**
+     * Returns all routes serving $method and optionally filtered by $regex
+     * @param string $method
+     * @param string $regex
+     * @return array
+     */
+    public function get_routes(int $method, string $regex = '') : array {
+        $ret = [];
+        foreach ($this->routing_maps as $RoutingMap) {
+            $ret = [...$ret, ...$RoutingMap->get_routes($method, $regex)];
+        }
+        return $ret;
+    }
+
     /**
      * Adds a new routing map.
      * The maps are matched in the order they were added.
