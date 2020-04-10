@@ -5,12 +5,17 @@ namespace Azonmedia\Routing;
 
 class RouteParser
 {
-    const VARIABLES_REGEX = '~{([^\/}]+)}~';
+
+    /**
+     * The regex used to match the variables in the URL
+     */
+    public const VARIABLES_REGEX = '~{([^\/}]+)}~';
 
     public function parse(string $uri) : ?array
     {
         $regex_uri = preg_replace_callback(self::VARIABLES_REGEX, function($matches) {
-            return '(.*)';
+            //return '(.*)';
+            return '([^/]+)';//never match / inside the values
         }, $uri, -1, $count);
         
         if ($count) {

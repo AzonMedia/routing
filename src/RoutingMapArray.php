@@ -25,20 +25,19 @@ implements RoutingMapInterface
     /**
      * @var array
      */
-    protected iterable $routing_map = [];
+    protected array $routing_map = [];
 
-    protected iterable $routing_meta_data = [];
+    protected array $routing_meta_data = [];
 
     /**
      * @var array
      */
-    protected $routing_map_regex = [];
+    protected array $routing_map_regex = [];
 
 
+    protected RouteParser $RouteParser;
 
-    protected $RouteParser;
-
-    public function __construct(iterable $routing_map, iterable $routing_meta_data = [])
+    public function __construct(array $routing_map, array $routing_meta_data = [])
     {
         $this->routing_map = $routing_map;
         $this->routing_meta_data = $routing_meta_data;
@@ -56,7 +55,7 @@ implements RoutingMapInterface
 
     /**
      * Returns all routes serving $method and optionally filtered by $regex
-     * @param string $method
+     * @param int $method
      * @param string $regex
      * @return array
      */
@@ -219,8 +218,8 @@ implements RoutingMapInterface
 
                         if ($method_const & $method) { //bitwise
 
-                            $class_name = $controller[0];
-                            $method_name = $controller[1];
+                            //$class_name = $controller[0];
+                            //$method_name = $controller[1];
 
                             array_shift($matches);
                             $arguments = array_combine($arr['arguments'], $matches);
@@ -241,7 +240,7 @@ implements RoutingMapInterface
                 //this needs to be converted to a callable if the provided method is not static
                 //if it is static then this is a valid callable
                 if (count($controller_to_execute) != 2) {
-                    throw new RoutingConfigurationException(sprintf('An invalid number of elements %s is provided as controller for route %s. If the controller is set as an array the number of elements should be 2.'), count($controller), $route);
+                    throw new RoutingConfigurationException(sprintf('An invalid number of elements %s is provided as controller for route %s. If the controller is set as an array the number of elements should be 2.', count($controller_to_execute), $route));
                 }
                 $class_name = $controller_to_execute[0];
                 $method_name = $controller_to_execute[1];
