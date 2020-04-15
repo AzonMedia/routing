@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Azonmedia\Routing\Interfaces;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 interface RouterInterface
 {
@@ -15,7 +16,7 @@ interface RouterInterface
      * @param RequestInterface $Request
      * @return callable|null
      */
-    public function match_request(RequestInterface $Request) : ?RequestInterface;
+    public function match_request(ServerRequestInterface $Request) : ?ServerRequestInterface;
 
     /**
      * Merges the provided $routing_map_2 to $routing_map_1
@@ -27,5 +28,5 @@ interface RouterInterface
     public static function merge_routes(array $routing_map_1, array $routing_map_2) : array;
 
 
-    public function get_meta_data(RequestInterface $Request) : ?array ;
+    public function get_meta_data(ServerRequestInterface $Request) : ?array ;
 }

@@ -6,6 +6,7 @@ namespace Azonmedia\Routing;
 use Azonmedia\Routing\Exceptions\RoutingConfigurationException;
 use Azonmedia\Routing\Interfaces\RoutingMapInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 /**
  * Class RoutingMapArray
@@ -101,7 +102,7 @@ implements RoutingMapInterface
         return $this->routing_meta_data;
     }
 
-    public function get_meta_data(RequestInterface $Request) : ?array
+    public function get_meta_data(ServerRequestInterface $Request) : ?array
     {
         $route = $Request->getUri()->getPath();
         return $this->routing_meta_data[$route] ?? NULL;
@@ -126,11 +127,11 @@ implements RoutingMapInterface
      * It also supports matching with variables like /some/path/{value}.
      * {@inheritDoc}
      * @param RequestInterface $Request
-     * @return callable|null
+     * @return RequestInterface
      * @throws RoutingConfigurationException
      * @throws \ReflectionException
      */
-    public function match_request(RequestInterface $Request) : RequestInterface
+    public function match_request(ServerRequestInterface $Request) : ServerRequestInterface
     {
 
         $Request = $Request->withAttribute('route_meta_data', $this->get_meta_data($Request));
@@ -273,6 +274,7 @@ implements RoutingMapInterface
             }
 
         }
+
 
         $Request = $Request->withAttribute('controller_callable', $ret);//do not set this attribute to the request instance passed to the controller as this will be a circular reference and will postpone the object destruction
 

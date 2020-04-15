@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Azonmedia\Routing\Interfaces;
 
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 interface RoutingMapInterface
 {
@@ -15,7 +16,7 @@ interface RoutingMapInterface
      * @param RequestInterface $Request
      * @return RequestInterface
      */
-    public function match_request(RequestInterface $Request) : RequestInterface;
+    public function match_request(ServerRequestInterface $Request) : ServerRequestInterface;
 
-    public function get_meta_data(RequestInterface $Request) : ?array ;
+    public function get_meta_data(ServerRequestInterface $Request) : ?array ;
 }

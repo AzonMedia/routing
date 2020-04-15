@@ -6,6 +6,7 @@ namespace Azonmedia\Routing;
 use Azonmedia\Routing\Interfaces\RouterInterface;
 use Azonmedia\Routing\Interfaces\RoutingMapInterface;
 use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ServerRequestInterface;
 
 class Router
 implements RouterInterface
@@ -75,19 +76,21 @@ implements RouterInterface
      * @param RequestInterface $Request
      * @return callable|null
      */
-    public function match_request(RequestInterface $Request) : ?RequestInterface
+    public function match_request(ServerRequestInterface $Request) : ?ServerRequestInterface
     {
-        $ret = NULL;
+        $MatchedRequest = NULL;
+        /** @var RoutingMapInterface $RoutingMap */
         foreach ($this->routing_maps as $RoutingMap) {
-            $ret = $RoutingMap->match_request($Request);
-            if ($ret) {
+            $TestMatchedRequest = $RoutingMap->match_request($Request);
+            if ($TestMatchedRequest->getAttribute('controller_callable')) {
+                $MatchedRequest = $TestMatchedRequest;
                 break;
             }
         }
-        return $ret;
+        return $MatchedRequest;
     }
 
-    public function get_meta_data(RequestInterface $Request) : ?array
+    public function get_meta_data(ServerRequestInterface $Request) : ?array
     {
         $ret = NULL;
         foreach ($this->routing_maps as $RoutingMap) {
