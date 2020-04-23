@@ -30,7 +30,7 @@ implements RouterInterface
 
     /**
      * Returns all routes serving $method and optionally filtered by $regex
-     * @param string $method
+     * @param int $method
      * @param string $regex
      * @return array
      */
@@ -72,13 +72,14 @@ implements RouterInterface
     }
 
     /**
+     * Always returns aa Request. If there is a match the attribute controller_callable should be checked to exist.
      * {@inheritDoc}
      * @param RequestInterface $Request
-     * @return callable|null
+     * @return ServerRequestInterface
      */
-    public function match_request(ServerRequestInterface $Request) : ?ServerRequestInterface
+    public function match_request(ServerRequestInterface $Request) : ServerRequestInterface
     {
-        $MatchedRequest = NULL;
+        $MatchedRequest = $Request;
         /** @var RoutingMapInterface $RoutingMap */
         foreach ($this->routing_maps as $RoutingMap) {
             $TestMatchedRequest = $RoutingMap->match_request($Request);
