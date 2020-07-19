@@ -4,7 +4,7 @@
     "description": "Routing library",
     "keywords": ["utility","routing"],
     "homepage": "https://github.com/AzonMedia/routing",
-    "license": "BSD-3-Clause",
+    "license": "MIT",
     "authors": [
         {
             "name": "Vesko Kenashkov",
