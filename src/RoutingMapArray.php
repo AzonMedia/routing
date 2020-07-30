@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Azonmedia\Routing;
 
+use Azonmedia\Http\Method;
 use Azonmedia\Routing\Exceptions\RoutingConfigurationException;
 use Azonmedia\Routing\Interfaces\RoutingMapInterface;
 use Psr\Http\Message\RequestInterface;
@@ -137,7 +138,8 @@ implements RoutingMapInterface
 
         //$ret = $this->match_uri( (string) $Request->getUri() );
         //we must take into account the method as well
-        $method_const = $Request->getMethodConstant();
+        //$method_const = $Request->getMethodConstant();
+        $method_const = Method::get_method_constant($Request);
 
         $path = $Request->getUri()->getPath();
         $ret = NULL;
