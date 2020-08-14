@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Azonmedia\Routing;
@@ -8,6 +9,10 @@ use Azonmedia\Routing\Interfaces\RoutingMapInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ServerRequestInterface;
 
+/**
+ * Class Router
+ * @package Azonmedia\Routing
+ */
 class Router
 implements RouterInterface
 {
@@ -26,7 +31,6 @@ implements RouterInterface
     {
         $this->add_routing_map($RoutingMap);
     }
-
 
     /**
      * Returns all routes serving $method and optionally filtered by $regex
@@ -59,6 +63,11 @@ implements RouterInterface
         return $ret;
     }
 
+    /**
+     * Checks is the provided $RoutingMap already added.
+     * @param RoutingMapInterface $RoutingMap
+     * @return bool
+     */
     public function has_routing_map(RoutingMapInterface $RoutingMap) : bool
     {
         $ret = FALSE;
@@ -91,6 +100,11 @@ implements RouterInterface
         return $MatchedRequest;
     }
 
+    /**
+     * Returns the meta data (if there is such) for the route based on the $Request
+     * @param ServerRequestInterface $Request
+     * @return array|null
+     */
     public function get_meta_data(ServerRequestInterface $Request) : ?array
     {
         $ret = NULL;

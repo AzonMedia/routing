@@ -29,6 +29,11 @@ implements RoutingMapInterface
      */
     protected array $routing_map = [];
 
+    /**
+     * Contains the routing meta data.
+     * Multidimensional associative array like $routine_meta_data[$route][$method] = ['class' => 'some_class']
+     * @var array
+     */
     protected array $routing_meta_data = [];
 
     /**
@@ -36,9 +41,16 @@ implements RoutingMapInterface
      */
     protected array $routing_map_regex = [];
 
-
+    /**
+     * @var RouteParser
+     */
     protected RouteParser $RouteParser;
 
+    /**
+     * RoutingMapArray constructor.
+     * @param array $routing_map
+     * @param array $routing_meta_data
+     */
     public function __construct(array $routing_map, array $routing_meta_data = [])
     {
         $this->routing_map = $routing_map;
@@ -80,6 +92,12 @@ implements RoutingMapInterface
         return $ret;
     }
 
+    /**
+     * Adds a route
+     * @param string $route
+     * @param int $method Method constant from Azonmedia\Http\Method
+     * @param callable $controller
+     */
     public function add_route(string $route, int $method, callable $controller) : void
     {
         if (isset($this->routing_map[$route])) {
@@ -92,20 +110,43 @@ implements RoutingMapInterface
         $this->routing_map[$route][$method] = $controller;
     }
 
-    public function get_routing_map() : iterable
+    /**
+     * Returns the whole routing map.
+     * @return iterable
+     */
+    public function get_routing_map() : array
     {
         return $this->routing_map;
     }
 
+    /**
+     * @return array
+     */
     public function get_all_meta_data() : array
     {
         return $this->routing_meta_data;
     }
 
+    /**
+     * Returns the meta data (if there is such) for the route based on the $Request
+     * @param ServerRequestInterface $Request
+     * @return array|null
+     * @throws \Azonmedia\Exceptions\InvalidArgumentException
+     * @throws \Azonmedia\Exceptions\RunTimeException
+     */
     public function get_meta_data(ServerRequestInterface $Request) : ?array
     {
+        $ret = NULL;
         $route = $Request->getUri()->getPath();
-        return $this->routing_meta_data[$route] ?? NULL;
+        $method = Method::get_method_constant($Request);
+        if (isset($this->routing_meta_data[$route][$method])) {
+            $ret = $this->routing_meta_data[$route][$method];
+        } elseif ($route[-1] === '/' && isset($this->routing_meta_data[substr($route, 0, -1)][$method]) ) { //try the same route without the trailing /
+            $ret = $this->routing_meta_data[substr($route, 0, -1)][$method];
+        } elseif ($route[-1] !== '/' && isset($this->routing_meta_data[$route.'/'][$method]) ) { //try the same route with added trailing /
+            $ret = $this->routing_meta_data[$route.'/'][$method];
+        }
+        return $ret;
     }
 
     /**
