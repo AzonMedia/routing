@@ -18,7 +18,7 @@ implements RouterInterface
 {
 
     /**
-     * @var array of RoutingMapInterface
+     * @var RoutingMapInterface[]
      */
     protected $routing_maps = [];
 
@@ -112,6 +112,24 @@ implements RouterInterface
             $ret = $RoutingMap->get_meta_data($Request);
             if ($ret) {
                 break;
+            }
+        }
+        return $ret;
+    }
+    
+    public function get_all_meta_data(): array
+    {
+        $ret = [];
+        foreach ($this->routing_maps as $RoutingMap) {
+            $all_meta = $RoutingMap->get_all_meta_data();
+            //do not overwrite the matching entries - the first map to match takes precedence (like in the rest of the methods)
+            foreach ($all_meta as $route => $methods) {
+                foreach ($methods as $method => $meta) {
+                    if (array_key_exists($route, $ret) && array_key_exists($method, $ret[$route])) {
+                        continue;
+                    }
+                    $ret[$route][$method] = $meta;
+                }
             }
         }
         return $ret;

@@ -16,7 +16,7 @@ interface RouterInterface
      * @param RequestInterface $Request
      * @return callable|null
      */
-    public function match_request(ServerRequestInterface $Request) : ?ServerRequestInterface;
+    public function match_request(ServerRequestInterface $Request): ?ServerRequestInterface;
 
     /**
      * Merges the provided $routing_map_2 to $routing_map_1
@@ -25,8 +25,10 @@ interface RouterInterface
      * @param array $routing_map_2
      * @return array The merged routing map
      */
-    public static function merge_routes(array $routing_map_1, array $routing_map_2) : array;
+    public static function merge_routes(array $routing_map_1, array $routing_map_2): array;
 
 
-    public function get_meta_data(ServerRequestInterface $Request) : ?array ;
+    public function get_meta_data(ServerRequestInterface $Request): ?array;
+
+    public function get_all_meta_data(): array;
 }

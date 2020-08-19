@@ -16,7 +16,17 @@ interface RoutingMapInterface
      * @param RequestInterface $Request
      * @return RequestInterface
      */
-    public function match_request(ServerRequestInterface $Request) : ServerRequestInterface;
+    public function match_request(ServerRequestInterface $Request): ServerRequestInterface;
 
-    public function get_meta_data(ServerRequestInterface $Request) : ?array ;
+    /**
+     * Returns the meta data by the provided $Request
+     * @param ServerRequestInterface $Request
+     * @return array|null
+     */
+    public function get_meta_data(ServerRequestInterface $Request): ?array;
+
+    /**
+     * @return array
+     */
+    public function get_all_meta_data(): array;
 }
