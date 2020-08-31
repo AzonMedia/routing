@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Azonmedia\Routing\Interfaces;
@@ -19,6 +20,13 @@ interface RouterInterface
     public function match_request(ServerRequestInterface $Request): ?ServerRequestInterface;
 
     /**
+     * Returns all routes merged from all routing maps.
+     * If a route is defined in more than one routing map the first one takes precedence.
+     * @return iterable
+     */
+    public function get_all_routes(): iterable;
+
+    /**
      * Merges the provided $routing_map_2 to $routing_map_1
      * The mathing routes or methods are preserved from $routing_map_1.
      * @param array $routing_map_1
@@ -26,7 +34,6 @@ interface RouterInterface
      * @return array The merged routing map
      */
     public static function merge_routes(array $routing_map_1, array $routing_map_2): array;
-
 
     public function get_meta_data(ServerRequestInterface $Request): ?array;
 

@@ -81,6 +81,27 @@ implements RouterInterface
     }
 
     /**
+     * @return array
+     */
+    public function get_all_routes(): array
+    {
+        $ret = [];
+        foreach ($this->routing_maps as $RoutingMap) {
+            $all_routes = $RoutingMap->get_routing_map();
+            //do not overwrite the matching entries - the first map to match takes precedence (like in the rest of the methods)
+            foreach ($all_routes as $route => $methods) {
+                foreach ($methods as $method => $controller) {
+                    if (array_key_exists($route, $ret) && array_key_exists($method, $ret[$route])) {
+                        continue;
+                    }
+                    $ret[$route][$method] = $controller;
+                }
+            }
+        }
+        return $ret;
+    }
+
+    /**
      * Always returns aa Request. If there is a match the attribute controller_callable should be checked to exist.
      * {@inheritDoc}
      * @param RequestInterface $Request
