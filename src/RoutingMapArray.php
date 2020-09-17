@@ -319,7 +319,7 @@ implements RoutingMapInterface
 
 
         $Request = $Request->withAttribute('controller_callable', $ret);//do not set this attribute to the request instance passed to the controller as this will be a circular reference and will postpone the object destruction
-
+        $Request = $Request->withAttribute('matched_route', $arr['original_path']);
 
         return $Request;
     }
