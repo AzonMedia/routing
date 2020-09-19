@@ -185,6 +185,7 @@ implements RoutingMapInterface
         $path = $Request->getUri()->getPath();
         $ret = NULL;
 
+        $matched_route = '';
 
         $path_wo_trailing_slash = $path;
         if ($path[strlen($path) -1] === '/') {
@@ -270,6 +271,8 @@ implements RoutingMapInterface
                             //$Request = $Request->withAttribute('controller_arguments', $arguments);
 
                             //$ret = [new $class_name($Request), $method_name];
+                            $matched_route = $arr['original_path'];
+
                             $controller_to_execute = $controller;
                             break 2;
                         }
@@ -319,7 +322,7 @@ implements RoutingMapInterface
 
 
         $Request = $Request->withAttribute('controller_callable', $ret);//do not set this attribute to the request instance passed to the controller as this will be a circular reference and will postpone the object destruction
-        $Request = $Request->withAttribute('matched_route', $arr['original_path']);
+        $Request = $Request->withAttribute('matched_route', $matched_route);
 
         return $Request;
     }
