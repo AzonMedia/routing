@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Azonmedia\Routing;
 
+use Azonmedia\Exceptions\RunTimeException;
 use Azonmedia\Http\Method;
 use Azonmedia\Routing\Exceptions\RoutingConfigurationException;
 use Azonmedia\Routing\Interfaces\RoutingMapInterface;
@@ -61,6 +62,25 @@ implements RoutingMapInterface
         foreach ($routing_map as $path => $value) {
             $new_route = $this->RouteParser->parse($path);
             if ($new_route) {
+                if (isset($this->routing_map_regex[$new_route['path']])) {
+                    $controller_1 = $this->routing_map_regex[$new_route['path']][array_key_first($this->routing_map_regex[$new_route['path']])];
+                    $controller_2 = $value[array_key_first($value)];
+                    if (is_array($controller_1)) {
+                        $controller_1 = $controller_1[0].'::'.$controller_1[1];
+                    }
+                    if (is_array($controller_2)) {
+                        $controller_2 = $controller_2[0].'::'.$controller_2[1];
+                    }
+                    $message = sprintf(
+                        'The regex %1$s is already set in the routing_map_regex by %2$s (%3$s) and is attempted to be set again by %4$s (%5$s).',
+                        $new_route['path'],
+                        $controller_1,
+                        $this->routing_map_regex[$new_route['path']]['original_path'],
+                        $controller_2,
+                        $new_route['original_path']
+                    );
+                    throw new RunTimeException($message);
+                }
                 $this->routing_map_regex[$new_route['path']] = $value + $new_route;
             }
         }
@@ -261,7 +281,6 @@ implements RoutingMapInterface
                         }
 
                         if ($method_const & $method) { //bitwise
-
                             //$class_name = $controller[0];
                             //$method_name = $controller[1];
 
